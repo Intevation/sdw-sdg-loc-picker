@@ -1,0 +1,108 @@
+body {
+    font-family: Source Sans Pro, Arial;
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.country-name {
+    position: absolute;
+    top: 150px;
+    right: 10px;
+    background: rgb(255, 255, 255);
+    color: black;
+    display: none;
+    z-index: 999;
+    width: 200px;
+    max-width: 200px;
+    font-size: 13px;
+}
+
+.country-name p {
+    padding-left: 5px;
+}
+.country-name table{
+    padding: 5px
+}
+
+.legend,.legend-overview {
+    background: rgb(255, 255, 255);
+    width: 200px;
+    min-height: 63px;
+    position:absolute;
+    color: black;
+    right: 10px;
+    z-index: 999;
+    bottom: 25px;
+}
+
+.legend p , .legend-overview p{
+    padding-left: 5px;
+}
+
+.legend .list-inline, .legend-overview .list-inline {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+li.key {
+    float: left;
+    border-top-width: 15px;
+    border-top-style: solid;
+    width: 20%;
+    padding-left: 0;
+    padding-right: 0;
+    list-style:none;
+}
+
+.sandbox {
+    position: absolute;
+    width: 200px;
+    top: 10px;
+    right: 10px;
+    z-index: 999;
+}
+
+.selectize-dropdown {
+    background: rgb(255, 255, 255) !important;
+    color: black !important;
+}
+
+.selectize-input {
+    background: rgb(255, 255, 255) !important;
+    color: black !important;
+}
+
+.selectize-input input {
+    color: black !important;
+}
+
+
+
+/* Do a fancy data transition for browsers that support it */
+
+path {
+    -webkit-transition: fill 200ms;
+    transition: fill 200ms;
+}
+
+
+a.closeX {
+    display: inline-block;
+    position: absolute;
+    right: 0px;
+    width:30px;
+    color: #0068b4;
+    cursor:pointer;
+    z-index: 999;
+    font-size:20px; font-weight:bold;
+    padding: 1em;
+    margin: -1em;
+}
