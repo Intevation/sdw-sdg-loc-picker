@@ -34,50 +34,68 @@ var southWest = L.latLng(47.47266286861342, 0.9228515625000001),
 map.fitBounds(bounds);
 
 
-//window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
-//    params[key] = decodeURIComponent(value);
-//});
-
-
-var initLatLng = [52.37559917665913, 7.998046875000001];
+var initLatLng = [0.0, 0.0];
 var locMarker = L.marker(initLatLng);
 locMarker.addTo(map);
 
-$(function() {
+
+function plzToCoord(plz) {
+  return fetch(
+    "https://overpass-api.de/api/interpreter",
+    {
+      method: "POST",
+      body: "data="+ encodeURIComponent(`
+        [bbox:47.2701114,5.8663153,55.0991610,15.0419309]
+	[out:json] [timeout:10] ;
+        rel["postal_code"="` + plz + `"]; out center;`
+      )
+    },
+  ).then(
+    (data) => data.json()
+  )
+}
+
+function setLocation(latlng, zoom) {
+  console.log("Setting location " + latlng)
+  locMarker.setLatLng(latlng);
+  window.postMessage(latlng, '*');
+  parent.postMessage(latlng, '*');
+  $("#loc-out-lat").val(latlng.lat).trigger('change');
+  $("#loc-out-lng").val(latlng.lng).trigger('change');
+
+  if (zoom > 0) {
+    map.setView(latlng, zoom);
+  }
+}
+
+
+function onInit() {
   var params = new URLSearchParams(window.location.search);
   if (params.has('lat') && params.has('lng')) {
     var latN = parseFloat(params.get('lat'));
     var lngN = parseFloat(params.get('lng'));
     if (latN != NaN && lngN != NaN) {
-      $("#loc-in-lat").val(latN).trigger('change');
-      $("#loc-in-lng").val(lngN).trigger('change');
-      console.log(params.toString());
+      setLocation({ 'lat': latN, 'lng': lngN }, 16);
+      return
     }
   }
-});
+
+  // If lat/lng were given this function did return already
+  // -> resolve plz as fallback
+  if (params.has('plz')) {
+    plzToCoord(params.get('plz')).then(
+      (data) => {
+        setLocation({
+          'lat': data.elements[0].center.lat,
+          'lng': data.elements[0].center.lon
+	}, 11);
+      }
+    )
+  }
+}
+
+$(onInit);
 
 map.on("click", function(e) {
-  locMarker.setLatLng(e.latlng);
-  window.postMessage(e.latlng, '*');
-  parent.postMessage(e.latlng, '*');
-  $("#loc-out-lat").val(e.latlng.lat).trigger('change');
-  $("#loc-out-lng").val(e.latlng.lng).trigger('change');
-});
-
-// locMarker.on("move", function(e) {
-//   var latlng = locMarker.getLatLng();
-//   // console.log(latlng);
-//   parent.document.getById('loc-out-lat').value = latlng.lat
-//   parent.document.getById('loc-out-lng').value = latlng.lng
-// });
-
-$(".loc-in").on("change", function(e) {
-  var latlng = locMarker.getLatLng();
-  if (e.target.id === "loc-in-lat") {
-    latlng.lat = e.target.value;
-  } else if (e.target.id === "loc-in-lng") {
-    latlng.lng = e.target.value;
-  }
-  locMarker.setLatLng(latlng);
-  map.setView(latlng, 14);
+  setLocation(e.latlng, 0)
 });
